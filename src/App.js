@@ -1,21 +1,35 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 
 function App() {
-  const [tech, setTech] = useState(["ReactJS", "React Native"]);
-  const [newTech, setNewTech] = useState("");
+  const [techs, setTechs] = useState([]);
+  const [newTech, setNewTech] = useState('');
 
-  function handleAdd() {
-    setTech([...tech, newTech]);
-    setNewTech("");
-  }
+  const handleAdd = useCallback(() => {
+    setTechs([...techs, newTech]);
+    setNewTech('');
+  }, [newTech, techs]);
+
+  useEffect(() => {
+    const storageTechs = localStorage.getItem('techs');
+
+    if (storageTechs) setTechs(JSON.parse(storageTechs));
+  }, []);
+
+  useEffect(() => {
+    localStorage.setItem('techs', JSON.stringify(techs));
+  }, [techs]);
+
+  const techSize = useMemo(() => techs.length, [techs]);
 
   return (
     <>
       <ul>
-        {tech.map((t) => (
+        {techs.map((t) => (
           <li key={t}>{t}</li>
         ))}
       </ul>
+      <strong>Você tem {techSize} tecnologias.</strong>
+      <br />
       <input
         type="text"
         value={newTech}
